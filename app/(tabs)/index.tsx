@@ -57,6 +57,7 @@ export default function HomeScreen() {
   const [scannerOpen, setScannerOpen] = useState(false);
   const [scannedOnce, setScannedOnce] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [lastScannedBarcode, setLastScannedBarcode] = useState<string | null>(null);
 
   const [draft, setDraft] = useState({
     barcode: "",
@@ -90,14 +91,24 @@ export default function HomeScreen() {
         const product = json.product;
         const productName = product.product_name || `Item ${data.slice(-5)}`;
         setDraft((p) => ({ ...p, barcode: data, title: productName }));
+        // Silently added, no alert
       } else {
-        // Product not found, use generic name
-        setDraft((p) => ({ ...p, barcode: data, title: `Item ${data.slice(-5)}` }));
+        // Product not found in database
+        Alert.alert(
+          "Product Not Found",
+          `Barcode ${data} is not in our database. You can manually enter the product name.`,
+          [{ text: "OK" }]
+        );
+        setDraft((p) => ({ ...p, barcode: data, title: "" }));
       }
     } catch (error) {
       console.warn('Failed to fetch product info:', error);
-      // Fallback to generic name
-      setDraft((p) => ({ ...p, barcode: data, title: `Item ${data.slice(-5)}` }));
+      Alert.alert(
+        "Lookup Failed",
+        "Could not connect to product database. Please enter the product name manually.",
+        [{ text: "OK" }]
+      );
+      setDraft((p) => ({ ...p, barcode: data, title: "" }));
     }
   };
 
@@ -402,7 +413,11 @@ export default function HomeScreen() {
                         "code39", "code93", "itf14", "codabar", "code128", "upc_a"
                       ],
                     }}
-                    onBarcodeScanned={!scannedOnce ? ({ data }: any) => onScan({ data }) : undefined}
+                    onBarcodeScanned={!scannedOnce ? ({ data }: any) => {
+                      setLastScannedBarcode(data);
+                      // Auto-capture immediately
+                      onScan({ data });
+                    } : undefined}
                   />
                   {/* Scanning guide overlay */}
                   <View style={styles.scannerOverlay}>
@@ -413,6 +428,20 @@ export default function HomeScreen() {
                       <View style={[styles.corner, styles.cornerBottomRight]} />
                     </View>
                     <Text style={styles.scanInstruction}>Position barcode within frame</Text>
+                    
+                    {/* Manual capture button */}
+                    <Pressable
+                      style={styles.captureButton}
+                      onPress={() => {
+                        if (lastScannedBarcode) {
+                          onScan({ data: lastScannedBarcode });
+                        } else {
+                          Alert.alert("No Barcode Detected", "Please position a barcode in the frame first.");
+                        }
+                      }}
+                    >
+                      <View style={styles.captureButtonInner} />
+                    </Pressable>
                   </View>
                 </View>
               );
@@ -533,5 +562,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
+  },
+  captureButton: {
+    position: 'absolute',
+    bottom: 40,
+    alignSelf: 'center',
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 4,
+    borderColor: '#fff',
+  },
+  captureButtonInner: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#7DD3C0',
   },
 });
