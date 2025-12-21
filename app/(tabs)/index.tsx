@@ -76,11 +76,29 @@ export default function HomeScreen() {
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   }, [items]);
 
-  const onScan = ({ data }: any) => {
+  const onScan = async ({ data }: any) => {
     if (scannedOnce) return;
     setScannedOnce(true);
     setScannerOpen(false);
-    setDraft((p) => ({ ...p, barcode: data, title: `Item ${data.slice(-5)}` }));
+    
+    // Try to fetch product info from Open Food Facts
+    try {
+      const response = await fetch(`https://world.openfoodfacts.org/api/v2/product/${data}`);
+      const json = await response.json();
+      
+      if (json.status === 1 && json.product) {
+        const product = json.product;
+        const productName = product.product_name || `Item ${data.slice(-5)}`;
+        setDraft((p) => ({ ...p, barcode: data, title: productName }));
+      } else {
+        // Product not found, use generic name
+        setDraft((p) => ({ ...p, barcode: data, title: `Item ${data.slice(-5)}` }));
+      }
+    } catch (error) {
+      console.warn('Failed to fetch product info:', error);
+      // Fallback to generic name
+      setDraft((p) => ({ ...p, barcode: data, title: `Item ${data.slice(-5)}` }));
+    }
   };
 
   const addItem = () => {
@@ -386,6 +404,16 @@ export default function HomeScreen() {
                     }}
                     onBarcodeScanned={!scannedOnce ? ({ data }: any) => onScan({ data }) : undefined}
                   />
+                  {/* Scanning guide overlay */}
+                  <View style={styles.scannerOverlay}>
+                    <View style={styles.scanBox}>
+                      <View style={[styles.corner, styles.cornerTopLeft]} />
+                      <View style={[styles.corner, styles.cornerTopRight]} />
+                      <View style={[styles.corner, styles.cornerBottomLeft]} />
+                      <View style={[styles.corner, styles.cornerBottomRight]} />
+                    </View>
+                    <Text style={styles.scanInstruction}>Position barcode within frame</Text>
+                  </View>
                 </View>
               );
             })()
@@ -450,4 +478,60 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   scannerCloseText: { color: "#fff", fontWeight: "700" },
+  scannerOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scanBox: {
+    width: 250,
+    height: 200,
+    position: 'relative',
+  },
+  corner: {
+    position: 'absolute',
+    width: 30,
+    height: 30,
+    borderColor: '#7DD3C0',
+    borderWidth: 4,
+  },
+  cornerTopLeft: {
+    top: 0,
+    left: 0,
+    borderRightWidth: 0,
+    borderBottomWidth: 0,
+  },
+  cornerTopRight: {
+    top: 0,
+    right: 0,
+    borderLeftWidth: 0,
+    borderBottomWidth: 0,
+  },
+  cornerBottomLeft: {
+    bottom: 0,
+    left: 0,
+    borderRightWidth: 0,
+    borderTopWidth: 0,
+  },
+  cornerBottomRight: {
+    bottom: 0,
+    right: 0,
+    borderLeftWidth: 0,
+    borderTopWidth: 0,
+  },
+  scanInstruction: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    marginTop: 30,
+    textAlign: 'center',
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
 });
