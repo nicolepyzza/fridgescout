@@ -81,7 +81,8 @@ fridgescout/
 │       ├── icon.png       # App icon (1024x1024)
 │       └── splash-icon.png
 ├── constants/             # Theme colors and config
-├── .github/workflows/     # CI/CD automation
+├── .github/workflows/     # GitHub Actions CI/CD workflows
+├── .github/dependabot.yml # Dependabot configuration
 ├── screenshots/           # App Store screenshots
 └── app.json              # Expo configuration
 ```
