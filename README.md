@@ -25,7 +25,11 @@ FridgeScout is your personal food waste prevention assistant. Scan barcodes, tra
 
 ## 📸 Screenshots
 
-[Add screenshots here from the App Store]
+<p align="center">
+  <img src="assets/screenshots/screenshot-1.png" width="250" alt="Home Screen">
+  <img src="assets/screenshots/screenshot-2.png" width="250" alt="Add Item">
+  <img src="assets/screenshots/screenshot-3.png" width="250" alt="Barcode Scanner">
+</p>
 
 ---
 
