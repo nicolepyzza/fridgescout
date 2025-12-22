@@ -36,7 +36,7 @@ jobs:
         run: eas build --platform ios --profile production --non-interactive
 
       - name: Submit to App Store
-        run: eas submit --platform ios --latest --non-interactive
+        run: eas submit --platform ios --latest --non-interactive --apple-id "$EXPO_APPLE_ID" --apple-app-specific-password "$EXPO_APPLE_APP_SPECIFIC_PASSWORD"
         env:
           EXPO_APPLE_ID: ${{ secrets.APPLE_ID }}
           EXPO_APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
