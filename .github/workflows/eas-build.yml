@@ -8,6 +8,8 @@ jobs:
   build:
     name: Build & Submit iOS App
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     
     steps:
       - name: Checkout repository
