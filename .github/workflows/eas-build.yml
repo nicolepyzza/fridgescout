@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: Build iOS App
+    name: Build & Submit iOS App
     runs-on: ubuntu-latest
     
     steps:
@@ -29,7 +29,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build iOS app
+      - name: Build and submit iOS app
         run: eas build --platform ios --profile production --non-interactive --auto-submit
         env:
           EXPO_APPLE_ID: ${{ secrets.APPLE_ID }}
