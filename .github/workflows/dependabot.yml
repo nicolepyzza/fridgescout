@@ -1,0 +1,16 @@
+# This file is intentionally not a Dependabot configuration.
+# GitHub only recognizes Dependabot configuration files at:
+#   .github/dependabot.yml
+# If you want to configure Dependabot, create or edit that file instead.
+
+name: Dependabot configuration placeholder
+
+on:
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show Dependabot config location
+        run: echo "Dependabot configuration should be placed at .github/dependabot.yml"
