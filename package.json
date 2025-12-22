@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "description": "Track food expiration dates and reduce waste with barcode scanning and smart reminders",
   "author": "Nicole Pyzza",
-  "license": "SEE LICENSE IN LICENSE",
-  "private": true,
+  "license": "MIT",
+  "private": false,
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
