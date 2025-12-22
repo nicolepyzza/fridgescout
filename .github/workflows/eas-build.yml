@@ -33,7 +33,7 @@ jobs:
         run: npm ci
 
       - name: Build iOS app
-        run: eas build --platform ios --profile production --non-interactive --no-wait
+        run: eas build --platform ios --profile production --non-interactive
 
       - name: Submit to App Store
         run: eas submit --platform ios --latest --non-interactive
