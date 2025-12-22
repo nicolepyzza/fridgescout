@@ -1,16 +1,13 @@
 name: EAS Build & Deploy
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [published]
 
 jobs:
   build:
-    name: Build and Submit to App Store
+    name: Build iOS App
     runs-on: ubuntu-latest
-    # Only run on commits that update version (Release Please merges)
-    if: contains(github.event.head_commit.message, 'chore(main): release')
     
     steps:
       - name: Checkout repository
@@ -33,10 +30,7 @@ jobs:
         run: npm ci
 
       - name: Build iOS app
-        run: eas build --platform ios --profile production --non-interactive --no-wait
-
-      - name: Submit to App Store
-        run: eas submit --platform ios --latest --non-interactive
+        run: eas build --platform ios --profile production --non-interactive --auto-submit
         env:
           EXPO_APPLE_ID: ${{ secrets.APPLE_ID }}
           EXPO_APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
