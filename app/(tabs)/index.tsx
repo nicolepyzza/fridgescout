@@ -59,10 +59,17 @@ export default function HomeScreen() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [lastScannedBarcode, setLastScannedBarcode] = useState<string | null>(null);
 
+  // Helper to get default expiration date (30 days from now)
+  const getDefaultExpiryDate = () => {
+    const date = new Date();
+    date.setDate(date.getDate() + 30);
+    return date.toISOString().split('T')[0];
+  };
+
   const [draft, setDraft] = useState({
     barcode: "",
     title: "",
-    expiresOn: "",
+    expiresOn: getDefaultExpiryDate(),
     remindDaysBefore: "2",
   });
 
@@ -120,16 +127,18 @@ export default function HomeScreen() {
 
     (async () => {
       let notificationId: string | undefined;
-      if (draft.expiresOn) {
-        try {
-          const expires = new Date(draft.expiresOn);
-          if (!isNaN(expires.getTime())) {
-            const daysBefore = parseInt(draft.remindDaysBefore || "0", 10) || 0;
-            const triggerDate = new Date(expires);
-            triggerDate.setDate(triggerDate.getDate() - daysBefore);
+      // Use default expiry date if none set
+      const expiryDate = draft.expiresOn || getDefaultExpiryDate();
+      
+      try {
+        const expires = new Date(expiryDate);
+        if (!isNaN(expires.getTime())) {
+          const daysBefore = parseInt(draft.remindDaysBefore || "0", 10) || 0;
+          const triggerDate = new Date(expires);
+          triggerDate.setDate(triggerDate.getDate() - daysBefore);
 
-            // Only schedule if trigger is in the future
-            if (triggerDate.getTime() > Date.now()) {
+          // Only schedule if trigger is in the future
+          if (triggerDate.getTime() > Date.now()) {
               notificationId = await Notifications.scheduleNotificationAsync({
                 content: {
                   title: "Fridge item expiring",
@@ -143,12 +152,12 @@ export default function HomeScreen() {
         } catch (e) {
           console.warn("Failed to schedule notification", e);
         }
-      }
 
       setItems((p) => [
         {
           id: uid(),
           ...draft,
+          expiresOn: expiryDate,
           addedAt: new Date().toISOString(),
           notificationId,
         },
@@ -156,7 +165,7 @@ export default function HomeScreen() {
       ]);
     })();
 
-    setDraft({ barcode: "", title: "", expiresOn: "", remindDaysBefore: "2" });
+    setDraft({ barcode: "", title: "", expiresOn: getDefaultExpiryDate(), remindDaysBefore: "2" });
   };
 
   const removeItem = async (id: string) => {
