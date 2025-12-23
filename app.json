@@ -13,7 +13,8 @@
       "bundleIdentifier": "com.nicolepyzza.fridgescout",
       "buildNumber": "1",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCameraUsageDescription": "FridgeScout needs camera access to scan barcodes on food items. This helps you quickly add products to your fridge inventory and track their expiration dates."
       }
     },
     "android": {
