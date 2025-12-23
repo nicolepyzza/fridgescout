@@ -1,7 +1,7 @@
 {
   "name": "fridgescout",
   "main": "expo-router/entry",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Track food expiration dates and reduce waste with barcode scanning and smart reminders",
   "author": "Nicole Pyzza",
   "license": "MIT",
